@@ -1,5 +1,5 @@
 {
-  "name": "@joonhocho/typescript-esmodule-library-template",
+  "name": "localdb-ces6q",
   "version": "0.0.1",
   "description": "TypeScript ECMAScript Module Library Template",
   "type": "module",
@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/joonhocho/typescript-esmodule-library-template.git"
+    "url": "git+https://github.com/joonhocho/localdb.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/joonhocho/typescript-esmodule-library-template/issues"
+    "url": "https://github.com/joonhocho/localdb/issues"
   },
-  "homepage": "https://github.com/joonhocho/typescript-esmodule-library-template#readme",
+  "homepage": "https://github.com/joonhocho/localdb#readme",
   "dependencies": {},
   "devDependencies": {
     "@jest/globals": "^29.5.0",
