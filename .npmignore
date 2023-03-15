@@ -1,0 +1,6 @@
+coverage/
+src/
+test/
+.prettierrc
+jest.config.js
+tsconfig.json
