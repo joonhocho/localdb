@@ -9,9 +9,9 @@
     "build:watch": "tsc -w",
     "format": "prettier --write {src,test}/**/*.{ts,tsx,js,jsx}",
     "pub": "node publish.js",
-    "test": "jest -c ./jest.config.ts",
-    "test:cov": "jest -c ./jest.config.ts --collect-coverage",
-    "test:watch": "jest -c ./jest.config.ts --watch",
+    "test": "jest",
+    "test:cov": "jest --collect-coverage",
+    "test:watch": "jest --watch",
     "typecheck": "tsc --noEmit",
     "typecheck:watch": "tsc --noEmit -w"
   },
