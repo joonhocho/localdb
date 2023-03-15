@@ -1,6 +1,6 @@
 {
   "name": "localdb-ces6q",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "TypeScript ECMAScript Module Library Template",
   "type": "module",
   "module": "dist/index.js",
