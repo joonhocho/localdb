@@ -1,5 +1,5 @@
+import { BTree } from 'bplustree-mq4uj/btree.js';
 import { Debounce } from 'util-3gcvv/class/Debounce.js';
-import { SortedArray } from 'util-3gcvv/class/SortedArray.js';
 import { deepEqual } from 'util-3gcvv/deepEqual.js';
 import { objectEmpty, objectKeys } from 'util-3gcvv/object.js';
 import { randomString } from 'util-3gcvv/string.js';
@@ -44,7 +44,7 @@ export class LocalDB<CollectionTypes extends Record<string, IDocument>> {
   protected _indexes: {
     [ColName in KeyOf<CollectionTypes>]: Record<
       string,
-      SortedArray<CollectionTypes[ColName]>
+      BTree<CollectionTypes[ColName], CollectionTypes[ColName]>
     >;
   };
 
@@ -112,7 +112,7 @@ export class LocalDB<CollectionTypes extends Record<string, IDocument>> {
     this._indexes = {} as {
       [ColName in KeyOf<CollectionTypes>]: Record<
         string,
-        SortedArray<CollectionTypes[ColName]>
+        BTree<CollectionTypes[ColName], CollectionTypes[ColName]>
       >;
     };
 
@@ -141,7 +141,7 @@ export class LocalDB<CollectionTypes extends Record<string, IDocument>> {
     for (let col in this._indexes) {
       const indexes = this._indexes[col];
       for (let name in indexes) {
-        indexes[name].destroy();
+        indexes[name].clear();
       }
     }
     this._indexes = {} as any;
@@ -239,7 +239,7 @@ export class LocalDB<CollectionTypes extends Record<string, IDocument>> {
 
     const fieldIndexes = {} as Record<
       string,
-      SortedArray<CollectionTypes[typeof col]>
+      BTree<CollectionTypes[typeof col], CollectionTypes[typeof col]>
     >;
 
     for (let fi = 0, fl = fieldNames.length; fi < fl; fi += 1) {
@@ -256,9 +256,13 @@ export class LocalDB<CollectionTypes extends Record<string, IDocument>> {
           throw new Error(`Comparator must be set to index ${col}/${field}`);
         }
 
-        fieldIndexes[field] = new SortedArray(docs, (a: Data, b: Data) =>
-          comparator(a[field], b[field])
-        ) as any;
+        fieldIndexes[field] = new BTree(
+          docs.map((d) => [d, d]),
+          (a: Data, b: Data) => comparator(a[field], b[field])
+        ) as unknown as BTree<
+          CollectionTypes[typeof col],
+          CollectionTypes[typeof col]
+        >;
       }
     }
 
@@ -483,7 +487,7 @@ export class LocalDB<CollectionTypes extends Record<string, IDocument>> {
     if (!(index in col)) {
       throw new Error(`index ${colName}/${index} not found`);
     }
-    return col[index].array;
+    return col[index].valuesArray();
   }
 
   query<ColName extends KeyOf<CollectionTypes>>({
@@ -501,7 +505,7 @@ export class LocalDB<CollectionTypes extends Record<string, IDocument>> {
     }
     const index = col[orderBy];
     // TODO
-    return index.array;
+    return index.valuesArray();
   }
 
   //
@@ -583,13 +587,13 @@ export class LocalDB<CollectionTypes extends Record<string, IDocument>> {
 
     const indexes = this._indexes[colName];
     for (let indexName in indexes) {
-      indexes[indexName].insertOne(next);
+      indexes[indexName].set(next, next, true);
     }
 
     this._txRollbacks.push(() => {
       const indexes = this._indexes[colName];
       for (let indexName in indexes) {
-        indexes[indexName].removeOne(next);
+        indexes[indexName].delete(next);
       }
     });
 
@@ -853,15 +857,15 @@ export class LocalDB<CollectionTypes extends Record<string, IDocument>> {
 
       const indexes = this._indexes[colName];
       for (let indexName in indexes) {
-        indexes[indexName].removeOne(prev);
-        indexes[indexName].insertOne(next);
+        indexes[indexName].delete(prev);
+        indexes[indexName].set(next, next, true);
       }
 
       this._txRollbacks.push(() => {
         const indexes = this._indexes[colName];
         for (let indexName in indexes) {
-          indexes[indexName].removeOne(next);
-          indexes[indexName].insertOne(prev);
+          indexes[indexName].delete(next);
+          indexes[indexName].set(prev, prev, true);
         }
       });
 
@@ -1004,15 +1008,21 @@ export class LocalDB<CollectionTypes extends Record<string, IDocument>> {
 
       const indexes = this._indexes[colName];
       for (let indexName in indexes) {
-        indexes[indexName].removeMany(prevDocs);
-        indexes[indexName].insertMany(nextDocs);
+        indexes[indexName].deleteKeys(prevDocs);
+        indexes[indexName].setPairs(
+          nextDocs.map((doc) => [doc, doc]),
+          true
+        );
       }
 
       this._txRollbacks.push(() => {
         const indexes = this._indexes[colName];
         for (let indexName in indexes) {
-          indexes[indexName].removeMany(nextDocs);
-          indexes[indexName].insertMany(prevDocs);
+          indexes[indexName].deleteKeys(nextDocs);
+          indexes[indexName].setPairs(
+            prevDocs.map((doc) => [doc, doc]),
+            true
+          );
         }
       });
 
@@ -1092,13 +1102,13 @@ export class LocalDB<CollectionTypes extends Record<string, IDocument>> {
 
     const indexes = this._indexes[colName];
     for (let indexName in indexes) {
-      indexes[indexName].removeOne(prev);
+      indexes[indexName].delete(prev);
     }
 
     this._txRollbacks.push(() => {
       const indexes = this._indexes[colName];
       for (let indexName in indexes) {
-        indexes[indexName].insertOne(prev);
+        indexes[indexName].set(prev, prev, true);
       }
     });
 
@@ -1201,13 +1211,16 @@ export class LocalDB<CollectionTypes extends Record<string, IDocument>> {
 
     const indexes = this._indexes[colName];
     for (let indexName in indexes) {
-      indexes[indexName].removeMany(prevDocs);
+      indexes[indexName].deleteKeys(prevDocs);
     }
 
     this._txRollbacks.push(() => {
       const indexes = this._indexes[colName];
       for (let indexName in indexes) {
-        indexes[indexName].insertMany(prevDocs);
+        indexes[indexName].setPairs(
+          prevDocs.map((d) => [d, d]),
+          true
+        );
       }
     });
 

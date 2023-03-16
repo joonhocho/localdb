@@ -11,7 +11,9 @@ const config: Config = {
   // '^.+\\.ts?$': 'ts-jest',
   // '^.+\\.(js|jsx)$': 'babel-jest',
   // },
-  transformIgnorePatterns: ['node_modules/(?!@joonhocho|util-3gcvv)'], // needed to import es module library in ts test files
+  transformIgnorePatterns: [
+    'node_modules/(?!@joonhocho|util-3gcvv|bplustree-mq4uj)',
+  ], // needed to import es module library in ts test files
   // globals: {
   //   abc: 3,
   // },

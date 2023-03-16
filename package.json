@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/joonhocho/localdb#readme",
   "dependencies": {
+    "bplustree-mq4uj": "^0.0.2",
     "util-3gcvv": "^0.4.7"
   },
   "devDependencies": {
