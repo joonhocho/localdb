@@ -266,6 +266,20 @@ export class LocalDB<CollectionTypes extends Record<string, IDocument>> {
       }
     }
 
+    const { indexes } = config;
+    if (indexes) {
+      for (const name in indexes) {
+        const { compare } = indexes[name];
+        fieldIndexes[name] = new BTree(
+          docs.map((d) => [d, d]),
+          compare
+        ) as unknown as BTree<
+          CollectionTypes[typeof col],
+          CollectionTypes[typeof col]
+        >;
+      }
+    }
+
     this._indexes[col] = fieldIndexes;
   }
 

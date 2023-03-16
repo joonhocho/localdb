@@ -1419,4 +1419,178 @@ describe('LocalDB', () => {
       person: { p1: { cars: ['c1'], id: 'p1', name: 'jack' } },
     });
   });
+
+  test('indexes', () => {
+    const p1 = { id: 'p1', age: 10, name: 'sean' };
+    const p2 = { id: 'p2', age: 18, name: 'john' };
+
+    const initData = {
+      person: { p1, p2 },
+    };
+
+    const db = new LocalDB<{
+      person: { id: string; age: number; name: string };
+    }>(
+      {
+        person: {
+          fields: {
+            id: { type: 'string' },
+            age: { type: 'number' },
+            name: { type: 'string' },
+          },
+          indexes: {
+            age_name: {
+              fields: ['age', 'name'],
+              compare: (a, b) =>
+                a.age - b.age ||
+                a.name.localeCompare(b.name) ||
+                a.id.localeCompare(b.id),
+            },
+            name_age: {
+              fields: ['name', 'age'],
+              compare: (a, b) =>
+                a.name.localeCompare(b.name) ||
+                a.age - b.age ||
+                a.id.localeCompare(b.id),
+            },
+          },
+        },
+      },
+      initData,
+      { undoable: true }
+    );
+
+    // init
+
+    expect(db.docsOrderBy('person', 'age_name')).toEqual([p1, p2]);
+    expect(db.docsOrderBy('person', 'name_age')).toEqual([p2, p1]);
+
+    // add
+
+    const p3 = { id: 'p3', age: 18, name: 'mike' };
+    const p4 = { id: 'p4', age: 18, name: 'ashe' };
+    const p5 = { id: 'p5', age: 18, name: 'xin' };
+    const p6 = { id: 'p6', age: 10, name: 'john' };
+    const p7 = { id: 'p7', age: 12, name: 'sean' };
+    const p8 = { id: 'p8', age: 9, name: 'sean' };
+
+    db.setDocs('person', [p3, p4, p5]);
+
+    expect(
+      db
+        .docsOrderBy('person', 'age_name')
+        .map((x) => `${x.age}_${x.name}_${x.id}`)
+    ).toEqual([
+      '10_sean_p1',
+      '18_ashe_p4',
+      '18_john_p2',
+      '18_mike_p3',
+      '18_xin_p5',
+    ]);
+
+    expect(
+      db
+        .docsOrderBy('person', 'name_age')
+        .map((x) => `${x.name}_${x.age}_${x.id}`)
+    ).toEqual([
+      'ashe_18_p4',
+      'john_18_p2',
+      'mike_18_p3',
+      'sean_10_p1',
+      'xin_18_p5',
+    ]);
+
+    // add
+
+    db.setDocs('person', [p6, p7, p8]);
+
+    expect(
+      db
+        .docsOrderBy('person', 'age_name')
+        .map((x) => `${x.age}_${x.name}_${x.id}`)
+    ).toEqual([
+      '9_sean_p8',
+      '10_john_p6',
+      '10_sean_p1',
+      '12_sean_p7',
+      '18_ashe_p4',
+      '18_john_p2',
+      '18_mike_p3',
+      '18_xin_p5',
+    ]);
+
+    expect(
+      db
+        .docsOrderBy('person', 'name_age')
+        .map((x) => `${x.name}_${x.age}_${x.id}`)
+    ).toEqual([
+      'ashe_18_p4',
+      'john_10_p6',
+      'john_18_p2',
+      'mike_18_p3',
+      'sean_9_p8',
+      'sean_10_p1',
+      'sean_12_p7',
+      'xin_18_p5',
+    ]);
+
+    // delete
+
+    db.deleteDocs('person', ['p4', 'p1']);
+
+    expect(
+      db
+        .docsOrderBy('person', 'age_name')
+        .map((x) => `${x.age}_${x.name}_${x.id}`)
+    ).toEqual([
+      '9_sean_p8',
+      '10_john_p6',
+      '12_sean_p7',
+      '18_john_p2',
+      '18_mike_p3',
+      '18_xin_p5',
+    ]);
+
+    expect(
+      db
+        .docsOrderBy('person', 'name_age')
+        .map((x) => `${x.name}_${x.age}_${x.id}`)
+    ).toEqual([
+      'john_10_p6',
+      'john_18_p2',
+      'mike_18_p3',
+      'sean_9_p8',
+      'sean_12_p7',
+      'xin_18_p5',
+    ]);
+
+    // update
+    db.updateDocs('person', { p2: { age: 9 }, p7: { name: 'kim' } });
+
+    expect(
+      db
+        .docsOrderBy('person', 'age_name')
+        .map((x) => `${x.age}_${x.name}_${x.id}`)
+    ).toEqual([
+      '9_john_p2',
+      '9_sean_p8',
+      '10_john_p6',
+      '12_kim_p7',
+      '18_mike_p3',
+      '18_xin_p5',
+    ]);
+
+    expect(
+      db
+        .docsOrderBy('person', 'name_age')
+        .map((x) => `${x.name}_${x.age}_${x.id}`)
+    ).toEqual([
+      'john_9_p2',
+      'john_10_p6',
+      'kim_12_p7',
+      'mike_18_p3',
+      'sean_9_p8',
+      'xin_18_p5',
+    ]);
+  });
 });

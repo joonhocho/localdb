@@ -56,6 +56,11 @@ export type ICollectionFieldsConfig<Doc extends IDocument> = {
   };
 };
 
+export interface IDocumentIndexConfig<Doc extends IDocument> {
+  fields: Array<KeyOf<Doc>>;
+  compare: (a: Doc, b: Doc) => number;
+}
+
 export interface ICollectionConfig<
   CollectionTypes extends Record<string, IDocument>,
   Doc extends IDocument
@@ -64,8 +69,8 @@ export interface ICollectionConfig<
   localStorageSetWait?: number;
   remoteStorageKey?: string;
   remoteStorageSetWait?: number;
-  indexes?: Array<KeyOf<Doc> | Array<KeyOf<Doc>>>;
-  idFields?: Array<KeyOf<Doc>>;
+  indexes?: Record<string, IDocumentIndexConfig<Doc>>; // TODO composite indexes
+  idFields?: Array<KeyOf<Doc>>; // TODO composite id
   fields: ICollectionFieldsConfig<Doc>;
   computes?: Array<{
     deps: Array<KeyOf<Doc>>;
