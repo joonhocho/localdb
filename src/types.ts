@@ -69,7 +69,7 @@ export interface ICollectionConfig<
   localStorageSetWait?: number;
   remoteStorageKey?: string;
   remoteStorageSetWait?: number;
-  indexes?: Record<string, IDocumentIndexConfig<Doc>>; // TODO composite indexes
+  indexes?: Record<string, IDocumentIndexConfig<Doc>>;
   idFields?: Array<KeyOf<Doc>>; // TODO composite id
   fields: ICollectionFieldsConfig<Doc>;
   computes?: Array<{
