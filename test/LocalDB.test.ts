@@ -1,3 +1,4 @@
+import { BTree } from 'bplustree-mq4uj/btree.js';
 import { arraysEqual, dedupKeys } from 'util-3gcvv/array.js';
 import { objectMap } from 'util-3gcvv/object.js';
 import { describe, expect, jest, test } from '@jest/globals';
@@ -1592,5 +1593,22 @@ describe('LocalDB', () => {
       'sean_9_p8',
       'xin_18_p5',
     ]);
+
+    expect(db.getIndex('person', 'name_age')).toBeInstanceOf(BTree);
+    expect(
+      db
+        .getIndex('person', 'name_age')
+        .valuesArray()
+        .map((x) => `${x.name}_${x.age}_${x.id}`)
+    ).toEqual([
+      'john_9_p2',
+      'john_10_p6',
+      'kim_12_p7',
+      'mike_18_p3',
+      'sean_9_p8',
+      'xin_18_p5',
+    ]);
+
+    expect(() => db.getIndex('person', 'not_found_index')).toThrow();
   });
 });

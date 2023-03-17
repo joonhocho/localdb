@@ -493,6 +493,17 @@ export class LocalDB<CollectionTypes extends Record<string, IDocument>> {
     return ids.map((id) => col[id]);
   }
 
+  getIndex<ColName extends KeyOf<CollectionTypes>>(
+    colName: ColName,
+    index: string
+  ): BTree<CollectionTypes[ColName], CollectionTypes[ColName]> {
+    const col = this._indexes[colName];
+    if (!(index in col)) {
+      throw new Error(`index ${colName}/${index} not found`);
+    }
+    return col[index];
+  }
+
   docsOrderBy<ColName extends KeyOf<CollectionTypes>>(
     colName: ColName,
     index: string
