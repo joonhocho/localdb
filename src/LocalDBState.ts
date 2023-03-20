@@ -29,20 +29,6 @@ export const LocalDBState = defineSmartState<
   computed: {
     // []
     // [a, b, c, d]
-    canRedo: {
-      type: 'boolean',
-      deps: ['redoItem'],
-      get({ redoItem }) {
-        return redoItem != null;
-      },
-    },
-    canUndo: {
-      type: 'boolean',
-      deps: ['undoItem'],
-      get({ undoItem }) {
-        return undoItem != null;
-      },
-    },
     redoItem: {
       type: 'array',
       item: 'object',
@@ -57,6 +43,20 @@ export const LocalDBState = defineSmartState<
       deps: ['history', 'historyIndex'],
       get({ history, historyIndex }) {
         return history[historyIndex - 1];
+      },
+    },
+    canRedo: {
+      type: 'boolean',
+      deps: ['redoItem'],
+      get({ redoItem }) {
+        return redoItem != null;
+      },
+    },
+    canUndo: {
+      type: 'boolean',
+      deps: ['undoItem'],
+      get({ undoItem }) {
+        return undoItem != null;
       },
     },
   },
