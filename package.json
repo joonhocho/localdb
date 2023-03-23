@@ -28,7 +28,7 @@
   "homepage": "https://github.com/joonhocho/localdb#readme",
   "dependencies": {
     "bplustree-mq4uj": "^0.1.0",
-    "util-3gcvv": "^0.6.5"
+    "util-3gcvv": "^0.6.6"
   },
   "devDependencies": {
     "@babel/core": "^7.21.3",
@@ -40,6 +40,7 @@
     "jest-ts-webcompat-resolver": "^1.0.0",
     "prettier": "^2.8.6",
     "react": "^18.2.0",
+    "shelljs": "^0.8.5",
     "shx": "^0.3.4",
     "ts-jest": "^29.0.5",
     "typescript": "^5.0.2"
