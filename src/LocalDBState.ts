@@ -1,4 +1,6 @@
-import { SmartState, defineSmartState } from 'util-3gcvv/class/SmartState.js';
+import { defineSmartState } from 'util-3gcvv/class/SmartState.js';
+
+import type { SmartState } from 'util-3gcvv/class/SmartStateTypes.js';
 
 import type { IDBOperationHistoryItem } from './types.js';
 
