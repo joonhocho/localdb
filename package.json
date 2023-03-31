@@ -28,22 +28,22 @@
   "homepage": "https://github.com/joonhocho/localdb#readme",
   "dependencies": {
     "bplustree-mq4uj": "^0.1.0",
-    "util-3gcvv": "^0.6.10"
+    "util-3gcvv": "^0.6.12"
   },
   "devDependencies": {
-    "@babel/core": "^7.21.3",
-    "@babel/preset-env": "^7.20.2",
-    "@babel/preset-typescript": "^7.21.0",
+    "@babel/core": "^7.21.4",
+    "@babel/preset-env": "^7.21.4",
+    "@babel/preset-typescript": "^7.21.4",
     "@jest/globals": "^29.5.0",
     "@types/jest": "^29.5.0",
-    "@types/react": "^18.0.29",
+    "@types/react": "^18.0.31",
     "jest-ts-webcompat-resolver": "^1.0.0",
     "prettier": "^2.8.7",
     "react": "^18.2.0",
     "shelljs": "^0.8.5",
     "shx": "^0.3.4",
     "ts-jest": "^29.0.5",
-    "typescript": "^5.0.2"
+    "typescript": "^5.0.3"
   },
   "publishConfig": {
     "access": "public"
